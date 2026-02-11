@@ -22,6 +22,7 @@ const allowedTags = [
   "h4",
   "hr",
   "i",
+  "img",
   "li",
   "ol",
   "p",
@@ -36,7 +37,7 @@ const allowedTags = [
   "ul",
 ];
 
-const allowedAttrs = ["class", "href", "rel", "target", "title", "start"];
+const allowedAttrs = ["class", "href", "rel", "target", "title", "start", "src", "alt"];
 
 let hooksInstalled = false;
 const MARKDOWN_CHAR_LIMIT = 140_000;
@@ -107,6 +108,7 @@ export function toSanitizedMarkdownHtml(markdown: string): string {
     const sanitized = DOMPurify.sanitize(html, {
       ALLOWED_TAGS: allowedTags,
       ALLOWED_ATTR: allowedAttrs,
+      ADD_DATA_URI_TAGS: ["img"],
     });
     if (input.length <= MARKDOWN_CACHE_MAX_CHARS) {
       setCachedMarkdown(input, sanitized);
@@ -117,6 +119,7 @@ export function toSanitizedMarkdownHtml(markdown: string): string {
   const sanitized = DOMPurify.sanitize(rendered, {
     ALLOWED_TAGS: allowedTags,
     ALLOWED_ATTR: allowedAttrs,
+    ADD_DATA_URI_TAGS: ["img"],
   });
   if (input.length <= MARKDOWN_CACHE_MAX_CHARS) {
     setCachedMarkdown(input, sanitized);
