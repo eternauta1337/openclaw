@@ -8,6 +8,7 @@ import type {
   ToolCallSummary,
   ToolHandlerContext,
 } from "./pi-embedded-subscribe.handlers.types.js";
+import { splitMediaFromOutput } from "../media/parse.js";
 import {
   extractMessagingToolSend,
   extractToolErrorMessage,
@@ -170,8 +171,11 @@ function emitToolResultOutput(params: {
   if (mediaPaths.length === 0) {
     return;
   }
+  // Detect [[audio_as_voice]] tag so TTS audio is delivered as a voice bubble.
+  const resultText = extractToolResultText(result);
+  const audioAsVoice = resultText ? splitMediaFromOutput(resultText).audioAsVoice : undefined;
   try {
-    void ctx.params.onToolResult({ mediaUrls: mediaPaths });
+    void ctx.params.onToolResult({ mediaUrls: mediaPaths, ...(audioAsVoice ? { audioAsVoice } : {}) });
   } catch {
     // ignore delivery failures
   }
